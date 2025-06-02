@@ -117,28 +117,22 @@
             // Attempt to read the Gemini API key from the environment variable GEMINI_API_KEY.
             // This is essential for deployment on platforms like Vercel, Netlify, or GitHub where you'll set this variable.
             // If the variable is not found (e.g., in local development without a .env setup), it defaults to an empty string.
-            const apiKey = (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) || ""; // This will be automatically provided by the Canvas environment.
+            // const apiKey = (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) || ""; // This will be automatically provided by the Canvas environment.
                                // For Vercel/GitHub deployment, set this as an environment variable
                                // named GEMINI_API_KEY in your Vercel project settings.
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            // const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const apiUrl = '/api/proxy';
 
-            const payload = {
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }],
-                generationConfig: {
-                    temperature: 0.8,
-                    topK: 40,
-                    topP: 0.95,
-                }
+            const proxyPayload = {
+              type: 'text',
+              prompt: prompt,
+              generationConfig: { temperature: 0.8, topK: 40, topP: 0.95 }
             };
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(proxyPayload)
             });
 
             let data;
@@ -146,13 +140,16 @@
                 data = await response.json();
             } catch (e) {
                 const errorText = await response.text();
-                throw new Error(`API returned non-JSON response or empty body: ${response.status} - ${errorText}`);
+                throw new Error(`Proxy API returned non-JSON response or empty body: ${response.status} - ${errorText}`);
             }
 
             if (!response.ok) {
-                throw new Error(data.error.message || `API error! status: ${response.status}`);
+                // Error might be from our proxy { error: 'message', details: '...' } or from Google via proxy
+                const errorMessage = data.details || (data.error && data.error.message) || data.error || `API error! status: ${response.status}`;
+                throw new Error(errorMessage);
             }
 
+            // Assuming proxy passes through Google's successful response structure
             if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
                 return data.candidates[0].content.parts[0].text;
             } else {
@@ -166,39 +163,45 @@
             // Attempt to read the Imagen API key from the environment variable IMAGEN_API_KEY.
             // This is essential for deployment on platforms like Vercel, Netlify, or GitHub where you'll set this variable.
             // If the variable is not found (e.g., in local development without a .env setup), it defaults to an empty string.
-            const apiKey = (typeof process !== 'undefined' && process.env && process.env.IMAGEN_API_KEY) || ""; // This will be automatically provided by the Canvas environment.
+            // const apiKey = (typeof process !== 'undefined' && process.env && process.env.IMAGEN_API_KEY) || ""; // This will be automatically provided by the Canvas environment.
                                // For Vercel/GitHub deployment, set this as an environment variable
                                // named IMAGEN_API_KEY in your Vercel project settings.
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+            // const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+            const apiUrl = '/api/proxy';
 
-            const payload = {
-                instances: { prompt: prompt },
-                parameters: { "sampleCount": 1 }
+            const proxyPayload = {
+              type: 'image',
+              prompt: prompt,
+              parameters: { "sampleCount": 1 }
             };
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(proxyPayload)
             });
 
-            // Check for 401 specifically
-            if (response.status === 401) {
-                throw new Error("Authentication failed for Image API. Please ensure your environment is configured correctly and has access to the Imagen API.");
-            }
+            // Check for 401 specifically - this might now be handled by the proxy logic if proxy itself gets 401
+            // However, client-side check for specific status codes if proxy passes them through can still be useful.
+            // if (response.status === 401) {
+            //     throw new Error("Authentication failed for Image API. Please ensure your environment is configured correctly and has access to the Imagen API.");
+            // }
 
             let data;
             try {
                 data = await response.json();
             } catch (e) {
                 const errorText = await response.text();
-                throw new Error(`Image API returned non-JSON response or empty body: ${response.status} - ${errorText}`);
+                throw new Error(`Proxy API returned non-JSON response or empty body for image: ${response.status} - ${errorText}`);
             }
 
             if (!response.ok) {
-                throw new Error(data.error.message || `Image API error! status: ${response.status}`);
+                // Error might be from our proxy { error: 'message', details: '...' } or from Google via proxy
+                const errorMessage = data.details || (data.error && data.error.message) || data.error || `Image API error! status: ${response.status}`;
+                throw new Error(errorMessage);
             }
 
+            // Assuming proxy passes through Google's successful response structure
             if (data.predictions && data.predictions.length > 0 && data.predictions[0].bytesBase64Encoded) {
                 return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
             } else {
