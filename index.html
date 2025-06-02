@@ -502,7 +502,11 @@
 
         // Gemini API Call Functions
         async function callGeminiTextAPI(prompt) {
-            const apiKey = ""; // API key is automatically provided by the environment. Ensure your project has access to necessary Gemini models.
+            // In a real deployment, you would fetch this from an environment variable:
+            // const apiKey = process.env.GEMINI_API_KEY;
+            const apiKey = ""; // This will be automatically provided by the Canvas environment.
+                               // For Vercel/GitHub deployment, set this as an environment variable
+                               // named GEMINI_API_KEY in your Vercel project settings.
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             
             const payload = {
@@ -544,7 +548,11 @@
         }
 
         async function callGeminiImageAPI(prompt) {
-            const apiKey = ""; // API key is automatically provided by the environment. Ensure your project has access to Imagen API.
+            // In a real deployment, you would fetch this from an environment variable:
+            // const apiKey = process.env.IMAGEN_API_KEY;
+            const apiKey = ""; // This will be automatically provided by the Canvas environment.
+                               // For Vercel/GitHub deployment, set this as an environment variable
+                               // named IMAGEN_API_KEY in your Vercel project settings.
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
             
             const payload = {
@@ -917,7 +925,7 @@
             } catch (error) {
                 console.error('Error generating taglines:', error);
                 const li = document.createElement('li');
-                li.textContent = "Failed to generate taglines. " + (error.message || "Please try again.");
+                    li.textContent = "Failed to generate taglines. " + (error.message || "Please try again.");
                 taglinesList.appendChild(li);
             } finally {
                 taglinesLoading.classList.add('hidden');
