@@ -1,0 +1,103 @@
+body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F4EC; /* Soft, warm background */
+            color: #333;
+        }
+        .app-container {
+            min-height: 100vh;
+        }
+        .card {
+            background: #FFFFFF;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Softer, deeper shadow */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+        .btn-primary {
+            background-color: #6C63FF; /* A vibrant purple/blue */
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-primary:hover {
+            background-color: #5C54D8;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background-color: #E0E0E0; /* Light gray for secondary actions */
+            color: #333;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.6rem;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn-secondary:hover {
+            background-color: #D0D0D0;
+            transform: translateY(-1px);
+        }
+        .spinner {
+            border-top-color: #6C63FF; /* Match spinner to primary color */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .message-box-content {
+            background: #fff;
+            padding: 32px;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+        .output-section {
+            border: 1px dashed #D0D0D0;
+            background-color: #FDFDFD;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+        .output-section h4 {
+            font-weight: 600;
+            color: #4A4A4A;
+            margin-bottom: 0.75rem;
+        }
+        .image-container {
+            width: 100%;
+            max-width: 500px; /* Increased max width for image */
+            margin-left: auto;
+            margin-right: auto;
+            aspect-ratio: 16 / 9;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0.75rem;
+        }
